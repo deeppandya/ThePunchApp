@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import logicielsystems.thepunchapp.Schema.CompanySchema;
+import logicielsystems.thepunchapp.Schema.Employees;
 
 public class EmployeesActivity extends AppCompatActivity {
     RecyclerView mRecyclerView;
@@ -267,14 +268,22 @@ public class EmployeesActivity extends AppCompatActivity {
                 items.add("Item " + i);
             }*/
 
-            CompanySchema company=CompanySchema.find(CompanySchema.class,null,null).get(0);
+            /*CompanySchema company=CompanySchema.find(CompanySchema.class,null,null).get(0);
 
             for ( Map.Entry<String, String> entry : company.getEmployees().entrySet()) {
                 String key = entry.getKey();
                 String tab = entry.getValue();
                 items.add(tab);
                 // do something with key and/or tab
+            }*/
+
+             Iterator<Employees> employeesIterator= Employees.findAll(Employees.class);
+
+            while (employeesIterator.hasNext()){
+                Employees employee=employeesIterator.next();
+                items.add(employee.getEmployeeName());
             }
+
         }
 
         @Override

@@ -29,4 +29,5 @@ dependencies {
     compile 'com.github.satyan:sugar:1.5'
     //support for gradle >2.0
     //compile 'com.github.satyan:sugar:b16e65326a'
+    compile 'com.android.support:design:23.3.0'
 }

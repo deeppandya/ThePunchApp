@@ -6,8 +6,17 @@ package logicielsystems.thepunchapp.AsyncTasks;
 
 import android.content.ContentValues;
 import android.os.AsyncTask;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.stream.JsonReader;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -17,13 +26,18 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import logicielsystems.thepunchapp.Listners.LoginListner;
 import logicielsystems.thepunchapp.Schema.CompanySchema;
+import logicielsystems.thepunchapp.Schema.Employees;
+import logicielsystems.thepunchapp.Schema.Tasks;
 import logicielsystems.thepunchapp.Support.CommonFunctions;
 import logicielsystems.thepunchapp.Support.Constants;
 
-public class LoginAsyncTask extends AsyncTask<Void,Void,String> {
+public class LoginAsyncTask extends AsyncTask<Void, Void, String> {
 
     private String email;
     private String password;
@@ -32,7 +46,7 @@ public class LoginAsyncTask extends AsyncTask<Void,Void,String> {
     public LoginAsyncTask(String email, String password, LoginListner listner) {
         this.email = email;
         this.password = password;
-        this.listner=listner;
+        this.listner = listner;
     }
 
     @Override
@@ -63,27 +77,23 @@ public class LoginAsyncTask extends AsyncTask<Void,Void,String> {
             httpConn.setRequestMethod("POST");
             httpConn.setRequestProperty("USER-AGENT", "Mozilla/5.0");
             httpConn.setRequestProperty("ACCEPT-LANGUAGE", "en-US,en;0.5");
-            httpConn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+            httpConn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             httpConn.setDoOutput(true);
             DataOutputStream dStream = new DataOutputStream(httpConn.getOutputStream());
             dStream.writeBytes(CommonFunctions.getQuery(values));
             dStream.flush();
             dStream.close();
 
-            int code=httpConn.getResponseCode();
+            int code = httpConn.getResponseCode();
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(httpConn.getInputStream(), "UTF-8"));
-            String response=reader.readLine();
+            String response = reader.readLine();
             reader.close();
             return response;
-        }
-
-        catch (MalformedURLException e) {
+        } catch (MalformedURLException e) {
             e.printStackTrace();
             return null;
-        }
-
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
@@ -93,26 +103,89 @@ public class LoginAsyncTask extends AsyncTask<Void,Void,String> {
     protected void onPostExecute(String response) {
         super.onPostExecute(response);
 
-        boolean isSuccess=false;
+        boolean isSuccess = false;
 
-        if(response!=null)
-        {
-           /* UserSchema user=new Gson().fromJson(response,UserSchema.class);
-            long count=UserSchema.count(UserSchema.class,"email = ?",new String[]{user.getEmail()});
-            if(count<0)
-                user.save();*/
-            CompanySchema company=new Gson().fromJson(response,CompanySchema.class);
-            long count=CompanySchema.count(CompanySchema.class,"email = ?",new String[]{company.getEmail()});
-            if(count<=0)
-                company.save();
-            isSuccess=true;
-        }
-        else{
-            isSuccess=false;
+        if (response != null) {
+            try {
+                JSONObject companyObject = new JSONObject(response);
+
+                JSONObject employees = companyObject.getJSONObject("employees");
+                JSONObject tasks = companyObject.getJSONObject("tasks");
+
+                CompanySchema company = new Gson().fromJson(response, CompanySchema.class);
+
+                CompanySchema tempCompany=getCompany(company.getEmail());
+                if (tempCompany!=null)
+                    company=tempCompany;
+                else
+                    company.save();
+
+
+                setEmployees(employees,company);
+
+                setTasks(tasks,company);
+
+                isSuccess = true;
+            } catch (JSONException e) {
+                e.printStackTrace();
+                isSuccess = false;
+            }
+        } else {
+            isSuccess = false;
         }
 
         listner.afterLogin(isSuccess);
 
+    }
+
+    private CompanySchema getCompany(String email) {
+        try{
+            return CompanySchema.find(CompanySchema.class, "email = ?", new String[]{email}).get(0);
+        }catch (Exception ex){
+            return null;
+        }
+    }
+
+    private void setTasks(JSONObject tasks, CompanySchema company) {
+        Iterator<String> taskKeys = tasks.keys();
+
+        try {
+            while (taskKeys.hasNext()) {
+                String taskId = taskKeys.next();
+                String taskName = tasks.getString(taskId);
+
+                Tasks task=new Tasks(company.getId(),taskId,taskName);
+                long count = Tasks.count(Tasks.class, "taskId = ?", new String[]{task.getTaskId()});
+                if (count <= 0){
+                    long recordNum= task.save();
+                    Log.e("Task Id", recordNum+"");
+                }
+
+                Log.e("Task", taskId);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setEmployees(JSONObject employees,CompanySchema company) {
+        Iterator<String> employeeKeys = employees.keys();
+
+        try {
+            while (employeeKeys.hasNext()) {
+                String employeeId = employeeKeys.next();
+                String employeeName = employees.getString(employeeId);
+
+                Employees employee=new Employees(company.getId(),employeeId,employeeName);
+                long count = Employees.count(Employees.class, "employeeId = ?", new String[]{employee.getEmployeeId()});
+                if (count <= 0){
+                    long recordNum= employee.save();
+                    Log.e("Employee Id", recordNum+"");
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

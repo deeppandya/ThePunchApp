@@ -16,10 +16,10 @@ public class CompanySchema extends SugarRecord{
     private String name;
     private int isActive;	//1-online, 0-offline
     private String password;
-    private HashMap<String, String> employees = new HashMap<String, String>();
-    private HashMap<String, String> tasks = new HashMap<String, String>();
+    /*private HashMap<String, String> employees = new HashMap<String, String>();
+    private HashMap<String, String> tasks = new HashMap<String, String>();*/
 
-    public HashMap<String, String> getEmployees() {
+    /*public HashMap<String, String> getEmployees() {
         return employees;
     }
     public void setEmployees(HashMap<String, String> employees) {
@@ -30,7 +30,7 @@ public class CompanySchema extends SugarRecord{
     }
     public void setTasks(HashMap<String, String> tasks) {
         this.tasks = tasks;
-    }
+    }*/
     public int getIsActive() {
         return isActive;
     }
