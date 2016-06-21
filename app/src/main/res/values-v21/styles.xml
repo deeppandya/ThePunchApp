@@ -6,14 +6,10 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:colorButtonNormal">@color/colorAccent</item>
-        <item name="android:textColor">@color/primaryTextColor</item>
+        <item name="android:textColor">@color/colorTextIcons</item>
         <item name="android:textColorSecondary">@color/secondaryTextColor</item>
         <item name="android:divider">@color/dividerColor</item>
-
-        <item name="@android:textColorPrimary">@color/colorPrimary</item>
-        <item name="android:textColorHint">@color/colorAccent</item>
-        <!--<item name="android:navigationBarColor">@color/dividerColor</item>-->
+        <item name="@android:textColorPrimary">@color/primaryTextColor</item>
     </style>
 
 </resources>

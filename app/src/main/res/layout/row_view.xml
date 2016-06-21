@@ -23,7 +23,6 @@
         android:layout_height="wrap_content"
         android:text="@string/button_undo"
         android:textAllCaps="true"
-        android:textColor="@color/colorPrimary"
         android:layout_gravity="end|center_vertical"
         style="@style/Base.Widget.AppCompat.Button.Borderless"
         />
@@ -32,7 +31,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@android:color/darker_gray"
+        android:background="@color/dividerColor"
         android:layout_gravity="bottom"
         />
 

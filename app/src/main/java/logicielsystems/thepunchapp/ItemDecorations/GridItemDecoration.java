@@ -1,4 +1,4 @@
-package logicielsystems.thepunchapp.Support;
+package logicielsystems.thepunchapp.ItemDecorations;
 
 import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;

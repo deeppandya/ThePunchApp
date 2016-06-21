@@ -5,6 +5,8 @@ package logicielsystems.thepunchapp.Support;
  */
 public class Constants {
 
+    public static final int PENDING_REMOVAL_TIMEOUT = 3000; // 3sec
+
     public class ServerUrl {
         public static final String LOGIN_URL="http://159.203.42.206:8080/ThePunchApp/api/auth/login";
     }
