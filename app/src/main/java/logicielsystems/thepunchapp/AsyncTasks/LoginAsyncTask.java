@@ -7,14 +7,9 @@ package logicielsystems.thepunchapp.AsyncTasks;
 import android.content.ContentValues;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.stream.JsonReader;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,9 +21,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import logicielsystems.thepunchapp.Listners.LoginListner;
 import logicielsystems.thepunchapp.Schema.CompanySchema;
@@ -177,7 +170,7 @@ public class LoginAsyncTask extends AsyncTask<Void, Void, String> {
                 String employeeName = employees.getString(employeeId);
 
                 Employees employee=new Employees(company.getId(),employeeId,employeeName);
-                long count = Employees.count(Employees.class, "employeeId = ?", new String[]{employee.getEmployeeId()});
+                long count = Employees.count(Employees.class, "employeeId = ?", new String[]{employee.getEmpId()});
                 if (count <= 0){
                     long recordNum= employee.save();
                     Log.e("Employee Id", recordNum+"");

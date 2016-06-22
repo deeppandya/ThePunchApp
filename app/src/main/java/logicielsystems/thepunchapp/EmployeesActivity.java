@@ -1,26 +1,43 @@
 package logicielsystems.thepunchapp;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import logicielsystems.thepunchapp.Adapters.EmployeesAdapter;
+import logicielsystems.thepunchapp.AsyncTasks.AddEmployeeAsyncTask;
 import logicielsystems.thepunchapp.ItemDecorations.EmployeesAnimationDecorator;
+import logicielsystems.thepunchapp.Listners.AddEmployeeListner;
+import logicielsystems.thepunchapp.Listners.LoginListner;
+import logicielsystems.thepunchapp.Schema.CompanySchema;
+import logicielsystems.thepunchapp.Schema.Employees;
 
 public class EmployeesActivity extends AppCompatActivity {
     RecyclerView mRecyclerView;
+    private FloatingActionButton btnNewEmployee;
+    private ProgressDialog waitProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,8 +45,120 @@ public class EmployeesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_employees);
         /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);*/
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+
+        setViews();
+
         setUpRecyclerView();
+
+        setActions();
+    }
+
+    private void setViews() {
+        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        btnNewEmployee=(FloatingActionButton)findViewById(R.id.btnNewEmployee);
+    }
+
+    private void setUpRecyclerView() {
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setAdapter(new EmployeesAdapter());
+        mRecyclerView.setHasFixedSize(true);
+        getAdapter().setUndoOn(true);
+        setUpItemTouchHelper();
+        setUpAnimationDecoratorHelper();
+    }
+
+    private void setActions(){
+        btnNewEmployee.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAddEmployeeDialog();
+            }
+        });
+    }
+
+    private void showAddEmployeeDialog() {
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(EmployeesActivity.this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.dialog_add_employee, null);
+        dialogBuilder.setView(dialogView);
+
+        final EditText txtEmployeeId = (EditText) dialogView.findViewById(R.id.txtEmployeeId);
+        final EditText txtEmployeeName = (EditText) dialogView.findViewById(R.id.txtEmployeeName);
+
+        dialogBuilder.setPositiveButton(getResources().getString(R.string.action_save), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                CompanySchema company= getCompany();
+                Employees employee=new Employees(company.getId(),txtEmployeeId.getText().toString(),txtEmployeeName.getText().toString());
+                addEmployee(company.getEmail(),employee);
+            }
+        });
+
+        dialogBuilder.setNegativeButton(getResources().getString(R.string.action_cancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        /*Button btnSave=(Button)dialogView.findViewById(R.id.btnSave);
+        Button btnCancel=(Button)dialogView.findViewById(R.id.btnCancel);
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });*/
+
+        AlertDialog dialog = dialogBuilder.create();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
+    }
+
+    private void addEmployee(String email, Employees employee) {
+        AddEmployeeAsyncTask addEmployeeAsyncTask=new AddEmployeeAsyncTask(email,employee,getAddEmployeeListner());
+        addEmployeeAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    private AddEmployeeListner getAddEmployeeListner(){
+        return new AddEmployeeListner() {
+
+            @Override
+            public void beforeAddEmployee() {
+                showProgress();
+            }
+
+            @Override
+            public void afterAddEmployee(boolean isSuccess) {
+                cancleProgress();
+                getAdapter().notifyDataSetChanged();
+            }
+        };
+    }
+
+    private void showProgress() {
+        waitProgressDialog = ProgressDialog.show(EmployeesActivity.this, getResources().getString(R.string.please_wait), getResources().getString(R.string.adding_employee), true);
+        waitProgressDialog.setCancelable(true);
+    }
+
+    private void cancleProgress(){
+        waitProgressDialog.cancel();
+    }
+
+    private CompanySchema getCompany() {
+        try{
+            return CompanySchema.listAll(CompanySchema.class).get(0);
+        }catch (Exception ex){
+            return null;
+        }
     }
 
     /*@Override
@@ -49,15 +178,6 @@ public class EmployeesActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }*/
-
-    private void setUpRecyclerView() {
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setAdapter(new EmployeesAdapter());
-        mRecyclerView.setHasFixedSize(true);
-        getAdapter().setUndoOn(true);
-        setUpItemTouchHelper();
-        setUpAnimationDecoratorHelper();
-    }
 
     /**
      * This is the standard support library way of implementing "swipe to delete" feature. You can do custom drawing in onChildDraw method

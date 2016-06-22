@@ -71,7 +71,7 @@ public class EmployeesAdapter extends RecyclerView.Adapter {
             // we need to show the "normal" state
             viewHolder.itemView.setBackgroundColor(Color.WHITE);
             viewHolder.titleTextView.setVisibility(View.VISIBLE);
-            viewHolder.titleTextView.setText(employee.getEmployeeName());
+            viewHolder.titleTextView.setText(employee.getName());
             viewHolder.undoButton.setVisibility(View.GONE);
             viewHolder.undoButton.setOnClickListener(null);
         }

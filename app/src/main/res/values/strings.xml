@@ -16,4 +16,10 @@
     <string name="menu_checkbox_undo">Undo</string>
     <string name="menu_add_5_items">Add 5 items</string>
     <string name="button_undo">undo</string>
+    <string name="prompt_employee_id">Employee ID</string>
+    <string name="prompt_employee_name">Employee Name</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="prompt_task_name">Task Name</string>
+    <string name="adding_employee">adding employees ...</string>
 </resources>

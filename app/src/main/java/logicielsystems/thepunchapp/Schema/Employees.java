@@ -8,16 +8,18 @@ import com.orm.SugarRecord;
 public class Employees extends SugarRecord {
 
     private long companyId;
-    private String employeeId;
-    private String employeeName;
+    /*private String empId;
+    private String Name;*/
+    private String empId;
+    private String Name;
 
     public Employees() {
     }
 
-    public Employees(long companyId, String employeeId, String employeeName) {
+    public Employees(long companyId, String empId, String Name) {
         this.companyId = companyId;
-        this.employeeId = employeeId;
-        this.employeeName = employeeName;
+        this.empId = empId;
+        this.Name = Name;
     }
 
     public long getCompanyId() {
@@ -28,20 +30,20 @@ public class Employees extends SugarRecord {
         this.companyId = companyId;
     }
 
-    public String getEmployeeId() {
-        return employeeId;
+    public String getEmpId() {
+        return empId;
     }
 
-    public void setEmployeeId(String employeeId) {
-        this.employeeId = employeeId;
+    public void setEmpId(String empId) {
+        this.empId = empId;
     }
 
-    public String getEmployeeName() {
-        return employeeName;
+    public String getName() {
+        return Name;
     }
 
-    public void setEmployeeName(String employeeName) {
-        this.employeeName = employeeName;
+    public void setName(String name) {
+        this.Name = name;
     }
 }
 
